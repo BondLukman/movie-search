@@ -1,14 +1,18 @@
 const inputKeyword = document.querySelector(".input-keyword");
 const searchButton = document.querySelector(".search-button");
+const movieContainer = document.querySelector(".movie-container");
+const errorContainer = document.querySelector(".error-container");
 
 inputKeyword.addEventListener("keydown", async function (event) {
   if (event.key === "Enter") {
     event.preventDefault();
+
     try {
       const movies = await getMovieResults(inputKeyword.value);
       updateUI(movies);
     } catch (err) {
-      alert(err.message || err);
+      movieContainer.innerHTML = "";
+      updateError(err);
     }
   }
 });
@@ -18,7 +22,8 @@ searchButton.addEventListener("click", async function () {
     const movies = await getMovieResults(inputKeyword.value);
     updateUI(movies);
   } catch (err) {
-    alert(err.message || err);
+    movieContainer.innerHTML = "";
+    updateError(err);
   }
 });
 
@@ -65,11 +70,15 @@ function updateDetails(m) {
 }
 
 function updateUI(movies) {
+  errorContainer.innerHTML = "";
   let cards = "";
   movies.forEach((m) => (cards += showCards(m)));
 
-  const movieContainer = document.querySelector(".movie-container");
   movieContainer.innerHTML = cards;
+}
+
+function updateError(err) {
+  errorContainer.innerHTML = showError(err);
 }
 
 function showCards(m) {
@@ -113,4 +122,25 @@ function showMovieDetail(m) {
                 </div>
               </div>
             </div>`;
+}
+
+function showError(err) {
+  return `
+   <div class="col-12 col-md-8">
+      <div class="card border-danger text-center shadow" style='border-width: 20px;'>
+        <div class="card-body">
+        <h1
+          id="error-message"
+          class="text-danger"
+          style="font-size: 10rem; font-weight: bold"
+        >
+          EUWEUH !!
+        </h1>
+        <p class="card-text text-muted" style='font-size: 1.5rem; font-weight: bold'>${
+          err.message || err
+        }</p>
+      </div>
+    </div>
+  </div>
+  `;
 }
